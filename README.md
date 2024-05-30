@@ -37,7 +37,7 @@ This project is an Arduino-based application that converts text input from a use
 
 1.  Clone the repository from GitHub.
  
-    `git clone https://github.com/your-username/your-repo.git` 
+    `git clone https://github.com/kuriakosant/arduino-text-to-morse-code-blinker-terminal-app` 
     
 2.  Open the project in Visual Studio Code or the Arduino IDE.
 3.  Upload the `morse_code.ino` file to your Arduino Uno.
