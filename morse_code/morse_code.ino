@@ -1,5 +1,5 @@
 // Morse code dictionary
-const int dotDuration = 500;    // duration of a dot (increased to 500ms for better visibility)
+const int dotDuration = 500;    // duration of a dot
 const int dashDuration = dotDuration * 3;  // duration of a dash
 const int symbolPause = dotDuration;   // pause between dots and dashes in a character
 const int letterPause = dotDuration * 3;  // pause between letters
@@ -21,54 +21,50 @@ void blinkDash();
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
+  Serial.println("Welcome to kuriakos.ant arduino-text-to-morse-code-blinker-terminal-app");
+  Serial.println("Please input a message for your Arduino to blink in Morse code:");
 }
 
 void loop() {
-  // Prompt the user to enter a message
-  Serial.println("Please input your message:");
-
-  int i = 0;
-  while (true) {
-    while (Serial.available() > 0) {
-      char c = Serial.read();
-      if (c == '\n' || c == '\r') {
-        message[i] = '\0';  // Null-terminate the string
-        Serial.println("Your message is being blinked currently:");
-        blinkMorse(message);
-        i = 0;  // Reset index for the next message
-        break;  // Exit the loop to process the message
-      } else {
-        if (i < sizeof(message) - 1) {
-          message[i++] = c;  // Add the character to the message
+  // Wait for the user to input a message
+  if (Serial.available() > 0) {
+    int i = 0;
+    while (true) {
+      while (Serial.available() > 0) {
+        char c = Serial.read();
+        if (c == '\n' || c == '\r') {
+          message[i] = '\0';  // Null-terminate the string
+          Serial.print("Your message is \"");
+          Serial.print(message);
+          Serial.println("\" and is being blinked currently:");
+          blinkMorse(message);
+          Serial.println("Message has been blinked successfully.");
+          break;  // Exit the loop to process the message
+        } else {
+          if (i < sizeof(message) - 1) {
+            message[i++] = c;  // Add the character to the message
+          }
         }
       }
+      if (message[i] == '\0') {
+        break;  // Exit the loop if the message has been processed
+      }
     }
-  }
 
-  // Replay or exit handling
-  while (true) {
-    Serial.println("Do you want to replay the message? y/n");
-    while (Serial.available() == 0) {
-      // Wait for user input
-    }
-    char replay = Serial.read();
-    if (replay == 'y' || replay == 'Y') {
-      blinkMorse(message);
-    } else if (replay == 'n' || replay == 'N') {
-      break;
-    }
-  }
-
-  while (true) {
-    Serial.println("Do you want to exit? y/n");
-    while (Serial.available() == 0) {
-      // Wait for user input
-    }
-    char exitProgram = Serial.read();
-    if (exitProgram == 'y' || exitProgram == 'Y') {
-      return;  // Exit the loop, and program stops
-    } else if (exitProgram == 'n' || exitProgram == 'N') {
-      break;
+    // Prompt the user for another message or to exit
+    Serial.println("Do you want to blink another? y/n");
+    while (true) {
+      while (Serial.available() == 0) {
+        // Wait for user input
+      }
+      char response = Serial.read();
+      if (response == 'y' || response == 'Y') {
+        Serial.println("Please input a new message for your Arduino to blink in Morse code:");
+        break;  // Break to input a new message
+      } else if (response == 'n' || response == 'N') {
+        Serial.println("Exiting the program. Goodbye!");
+        while (true) {}  // Stop the loop and exit the program
+      }
     }
   }
 }
