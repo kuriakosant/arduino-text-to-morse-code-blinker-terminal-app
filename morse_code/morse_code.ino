@@ -1,5 +1,5 @@
 // Morse code dictionary
-const int dotDuration = 200;    // duration of a dot
+const int dotDuration = 500;    // duration of a dot (increased to 500ms for better visibility)
 const int dashDuration = dotDuration * 3;  // duration of a dash
 const int symbolPause = dotDuration;   // pause between dots and dashes in a character
 const int letterPause = dotDuration * 3;  // pause between letters
@@ -24,40 +24,51 @@ void setup() {
 }
 
 void loop() {
+  // Prompt the user to enter a message
+  Serial.println("Please input your message:");
+
+  int i = 0;
   while (true) {
-    Serial.println("Please input your message:");
-    while (Serial.available() == 0) {}  // Wait for user input
-    int i = 0;
     while (Serial.available() > 0) {
       char c = Serial.read();
-      if (c == '\n' || c == '\r') break;
-      message[i++] = c;
-    }
-    message[i] = '\0';  // Null-terminate the string
-    
-    Serial.println("Your message is being blinked currently:");
-    blinkMorse(message);
-    
-    while (true) {
-      Serial.println("Do you want to replay the message? y/n");
-      while (Serial.available() == 0) {}  // Wait for user input
-      char replay = Serial.read();
-      if (replay == 'y' || replay == 'Y') {
+      if (c == '\n' || c == '\r') {
+        message[i] = '\0';  // Null-terminate the string
+        Serial.println("Your message is being blinked currently:");
         blinkMorse(message);
-      } else if (replay == 'n' || replay == 'N') {
-        break;
+        i = 0;  // Reset index for the next message
+        break;  // Exit the loop to process the message
+      } else {
+        if (i < sizeof(message) - 1) {
+          message[i++] = c;  // Add the character to the message
+        }
       }
     }
+  }
 
-    while (true) {
-      Serial.println("Do you want to exit? y/n");
-      while (Serial.available() == 0) {}  // Wait for user input
-      char exitProgram = Serial.read();
-      if (exitProgram == 'y' || exitProgram == 'Y') {
-        return;  // Exit the loop, and program stops
-      } else if (exitProgram == 'n' || exitProgram == 'N') {
-        break;
-      }
+  // Replay or exit handling
+  while (true) {
+    Serial.println("Do you want to replay the message? y/n");
+    while (Serial.available() == 0) {
+      // Wait for user input
+    }
+    char replay = Serial.read();
+    if (replay == 'y' || replay == 'Y') {
+      blinkMorse(message);
+    } else if (replay == 'n' || replay == 'N') {
+      break;
+    }
+  }
+
+  while (true) {
+    Serial.println("Do you want to exit? y/n");
+    while (Serial.available() == 0) {
+      // Wait for user input
+    }
+    char exitProgram = Serial.read();
+    if (exitProgram == 'y' || exitProgram == 'Y') {
+      return;  // Exit the loop, and program stops
+    } else if (exitProgram == 'n' || exitProgram == 'N') {
+      break;
     }
   }
 }
@@ -88,12 +99,12 @@ void blinkDot() {
   digitalWrite(LED_BUILTIN, HIGH);
   delay(dotDuration);
   digitalWrite(LED_BUILTIN, LOW);
-  delay(dotDuration);
+  delay(symbolPause);
 }
 
 void blinkDash() {
   digitalWrite(LED_BUILTIN, HIGH);
   delay(dashDuration);
   digitalWrite(LED_BUILTIN, LOW);
-  delay(dotDuration);
+  delay(symbolPause);
 }
